@@ -3,11 +3,16 @@ import 'package:intl/intl.dart';
 
 import '../models/transactions.dart';
 
-class TransactionList extends StatelessWidget {
+class TransactionList extends StatefulWidget {
   final List<Transaction> transactions;
 
   const TransactionList({super.key, required this.transactions});
 
+  @override
+  State<TransactionList> createState() => _TransactionListState();
+}
+
+class _TransactionListState extends State<TransactionList> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -56,19 +61,19 @@ class TransactionList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            transactions[index].customerName,
+                            widget.transactions[index].customerName,
                             style: TextStyle(
                               fontSize: 16,
                             ),
                           ),
                           Text(
-                            transactions[index].bankName,
+                            widget.transactions[index].bankName,
                             style: TextStyle(
                               fontSize: 12,
                             ),
                           ),
                           Text(
-                            transactions[index].ref,
+                            widget.transactions[index].ref,
                             style: TextStyle(
                               fontSize: 12,
                             ),
@@ -84,21 +89,21 @@ class TransactionList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            transactions[index].amount.toString(),
+                            widget.transactions[index].amount.toString(),
                             style: TextStyle(
                               fontSize: 14,
                             ),
                           ),
                           Text(
                             DateFormat('EEEE, d MMM y').format(
-                                transactions[index].transactionDateTime),
+                                widget.transactions[index].transactionDateTime),
                             style: TextStyle(
                               fontSize: 12,
                             ),
                           ),
                           Text(
                             DateFormat().add_jm().format(
-                                transactions[index].transactionDateTime),
+                                widget.transactions[index].transactionDateTime),
                             style: TextStyle(
                               fontSize: 12,
                             ),
@@ -110,7 +115,7 @@ class TransactionList extends StatelessWidget {
             ),
           );
         },
-        itemCount: transactions.length,
+        itemCount: widget.transactions.length,
       ),
     ));
   }

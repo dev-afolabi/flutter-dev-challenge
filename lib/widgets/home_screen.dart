@@ -14,6 +14,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<Transaction> transactions = dummyData;
+
   void startAddNewTransaction(BuildContext context) {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -24,11 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         context: context,
         builder: (_) {
-          return SelectTransactionModal();
+          return SelectTransactionModal(
+            transactions: transactions,
+          );
         });
   }
-
-  final List<Transaction> transactions = dummyData.reversed.toList();
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Dashboard(),
           QuickLinks(),
           TransactionList(
-            transactions: transactions,
+            transactions: transactions.reversed.toList(),
           ),
           BottomNav(),
         ],
