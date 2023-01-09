@@ -5,6 +5,9 @@ class PaymentDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final routeArgs =
+        ModalRoute.of(context)?.settings.arguments as Map<String, String>;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -56,8 +59,6 @@ class PaymentDetailsPage extends StatelessWidget {
                 left: 15,
                 right: 15,
               ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
               width: double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -75,7 +76,7 @@ class PaymentDetailsPage extends StatelessWidget {
                           'Bank',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey.shade50,
+                            color: Color(0xff696969),
                           ),
                         ),
                         Text(
@@ -125,7 +126,7 @@ class PaymentDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Amount'),
-                        Text('test'),
+                        Text(routeArgs['amount'] as String),
                       ],
                     ),
                   ),

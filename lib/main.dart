@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './widgets/home_screen.dart';
+import './widgets/payment_details_screen.dart';
+import './providers/transactions_provider.dart';
+import 'providers/auth_provider.dart';
+import 'screens/auth_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,17 +37,33 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dev Challenge',
-      theme: ThemeData(
-        primarySwatch: buildMaterialColor(
-          const Color(0xff123CAA),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: ((context) => Transactions()),
         ),
-        textTheme: ThemeData.light().textTheme.copyWith(
-              bodyText1: TextStyle(color: Colors.white),
-            ),
+        ChangeNotifierProvider(
+          create: ((context) => Auth()),
+        ),
+      ],
+      child: Consumer<Auth>(
+        builder: ((context, auth, _) => MaterialApp(
+              title: 'Dev Challenge',
+              theme: ThemeData(
+                primarySwatch: buildMaterialColor(
+                  const Color(0xff123CAA),
+                ),
+                textTheme: ThemeData.light().textTheme.copyWith(
+                      bodyText1: TextStyle(color: Colors.white),
+                    ),
+              ),
+              home: auth.isAuth ? HomeScreen() : AuthScreen(),
+              routes: {
+                'payment-details-page': (ctx) => PaymentDetailsPage(),
+                'home': (ctx) => HomeScreen(),
+              },
+            )),
       ),
-      home: HomeScreen(),
     );
   }
 }

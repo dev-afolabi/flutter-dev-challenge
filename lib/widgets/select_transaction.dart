@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../models/transactions.dart';
 import './input_transaction_details_screen.dart';
 
 class SelectTransactionModal extends StatelessWidget {
-  final List<Transaction> transactions;
-
-  const SelectTransactionModal({super.key, required this.transactions});
+  const SelectTransactionModal({super.key});
 
   void showTransactionInputForm(BuildContext ctx) {
     Navigator.of(ctx).push(
       MaterialPageRoute(builder: (_) {
-        return InputTransactionDetails(
-          transactions: transactions,
-        );
+        return InputTransactionDetails();
       }),
     );
   }

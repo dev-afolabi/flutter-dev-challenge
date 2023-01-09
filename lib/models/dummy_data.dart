@@ -1,6 +1,6 @@
 import 'package:flutter_guid/flutter_guid.dart';
 
-import './transactions.dart';
+import 'transaction.dart';
 
 final dummyData = [
   Transaction(

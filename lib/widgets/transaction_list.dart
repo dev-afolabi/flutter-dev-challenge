@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-import '../models/transactions.dart';
+import '../providers/transactions_provider.dart';
 
-class TransactionList extends StatefulWidget {
-  final List<Transaction> transactions;
+class TransactionList extends StatelessWidget {
+  const TransactionList({super.key});
 
-  const TransactionList({super.key, required this.transactions});
-
-  @override
-  State<TransactionList> createState() => _TransactionListState();
-}
-
-class _TransactionListState extends State<TransactionList> {
   @override
   Widget build(BuildContext context) {
+    final transactions = Provider.of<Transactions>(context).transactions;
     return Expanded(
         child: Container(
       width: double.infinity,
@@ -61,19 +56,19 @@ class _TransactionListState extends State<TransactionList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.transactions[index].customerName,
+                            transactions[index].customerName,
                             style: TextStyle(
                               fontSize: 16,
                             ),
                           ),
                           Text(
-                            widget.transactions[index].bankName,
+                            transactions[index].bankName,
                             style: TextStyle(
                               fontSize: 12,
                             ),
                           ),
                           Text(
-                            widget.transactions[index].ref,
+                            transactions[index].ref,
                             style: TextStyle(
                               fontSize: 12,
                             ),
@@ -89,21 +84,21 @@ class _TransactionListState extends State<TransactionList> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            widget.transactions[index].amount.toString(),
+                            transactions[index].amount.toString(),
                             style: TextStyle(
                               fontSize: 14,
                             ),
                           ),
                           Text(
                             DateFormat('EEEE, d MMM y').format(
-                                widget.transactions[index].transactionDateTime),
+                                transactions[index].transactionDateTime),
                             style: TextStyle(
                               fontSize: 12,
                             ),
                           ),
                           Text(
                             DateFormat().add_jm().format(
-                                widget.transactions[index].transactionDateTime),
+                                transactions[index].transactionDateTime),
                             style: TextStyle(
                               fontSize: 12,
                             ),
@@ -115,7 +110,7 @@ class _TransactionListState extends State<TransactionList> {
             ),
           );
         },
-        itemCount: widget.transactions.length,
+        itemCount: transactions.length,
       ),
     ));
   }

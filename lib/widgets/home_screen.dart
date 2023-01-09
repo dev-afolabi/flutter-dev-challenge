@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/transactions.dart';
+import '../models/transaction.dart';
 import '../widgets/select_transaction.dart';
 import '../models/dummy_data.dart';
 import 'bottom_nav.dart';
@@ -8,12 +8,7 @@ import 'transaction_list.dart';
 import '../widgets/dashboard.dart';
 import '../widgets/quick_links.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
   final List<Transaction> transactions = dummyData;
 
   void startAddNewTransaction(BuildContext context) {
@@ -26,9 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         context: context,
         builder: (_) {
-          return SelectTransactionModal(
-            transactions: transactions,
-          );
+          return SelectTransactionModal();
         });
   }
 
@@ -40,9 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Dashboard(),
           QuickLinks(),
-          TransactionList(
-            transactions: transactions.reversed.toList(),
-          ),
+          TransactionList(),
           BottomNav(),
         ],
       ),
