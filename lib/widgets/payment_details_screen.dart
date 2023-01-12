@@ -1,12 +1,54 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class PaymentDetailsPage extends StatelessWidget {
+import '../models/transaction.dart';
+import '../providers/transactions_provider.dart';
+
+class PaymentDetailsPage extends StatefulWidget {
   const PaymentDetailsPage({super.key});
+
+  @override
+  State<PaymentDetailsPage> createState() => _PaymentDetailsPageState();
+}
+
+class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
+  bool isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      final routeArgs =
+          ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
+
+      final addTrans = (ModalRoute.of(context)?.settings.arguments
+          as Map<String, Object>)['addTrx'] as Function;
+      // Provider.of<Transactions>(context).addTransaction(context,
+      //     routeArgs['trx'] as Transaction, routeArgs['amount'] as String);
+      print(addTrans);
+      print(routeArgs['trx']);
+      print(routeArgs['amount'] as String);
+      addTrans(routeArgs['transaction'] as Transaction,
+          routeArgs['amount'] as String);
+    }
+    isInit = false;
+    super.didChangeDependencies();
+  }
+
+  String generateAccountNumber() {
+    var rng = Random();
+    var l = List.generate(8, (_) => rng.nextInt(10));
+
+    return l.join("");
+  }
 
   @override
   Widget build(BuildContext context) {
     final routeArgs =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>;
+        ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
+
+    final addTrans = (ModalRoute.of(context)?.settings.arguments
+        as Map<String, Object>)['addTrx'];
 
     return Scaffold(
       body: Container(
@@ -80,7 +122,7 @@ class PaymentDetailsPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'test',
+                          'Dev Challenge',
                           style: TextStyle(
                             fontSize: 14,
                           ),
@@ -98,7 +140,7 @@ class PaymentDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Account number'),
-                        Text('test'),
+                        Text('75' + generateAccountNumber()),
                       ],
                     ),
                   ),
@@ -112,7 +154,7 @@ class PaymentDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Account name'),
-                        Text('test'),
+                        Text('Parkway dev'),
                       ],
                     ),
                   ),
@@ -140,11 +182,11 @@ class PaymentDetailsPage extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   style: ButtonStyle(),
-                  onPressed: null,
-                  child: Text('Confirm'),
+                  onPressed: () {},
+                  child: Text('Share'),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

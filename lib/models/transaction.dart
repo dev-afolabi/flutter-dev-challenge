@@ -1,7 +1,4 @@
-import 'package:flutter_guid/flutter_guid.dart';
-
 class Transaction {
-  Guid id;
   double amount;
   DateTime transactionDateTime;
   bool transactionType;
@@ -10,7 +7,6 @@ class Transaction {
   String ref;
 
   Transaction({
-    required this.id,
     required this.amount,
     required this.transactionDateTime,
     required this.transactionType,

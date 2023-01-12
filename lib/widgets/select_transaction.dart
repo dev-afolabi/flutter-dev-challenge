@@ -6,7 +6,7 @@ class SelectTransactionModal extends StatelessWidget {
   const SelectTransactionModal({super.key});
 
   void showTransactionInputForm(BuildContext ctx) {
-    Navigator.of(ctx).push(
+    Navigator.of(ctx).pushReplacement(
       MaterialPageRoute(builder: (_) {
         return InputTransactionDetails();
       }),

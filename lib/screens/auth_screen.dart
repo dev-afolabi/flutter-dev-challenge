@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:dev_challenge/models/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,75 +9,17 @@ enum AuthMode { signup, login }
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
 
+  const AuthScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
-    // final transformConfig = Matrix4.rotationZ(-8 * pi / 180);
-    // transformConfig.translate(-10.0);
-    return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0, 1],
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            child: Container(
-              height: deviceSize.height,
-              width: deviceSize.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Flexible(
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 20.0),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
-                      transform: Matrix4.rotationZ(-8 * pi / 180)
-                        ..translate(-10.0),
-                      // ..translate(-10.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.deepOrange.shade900,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 8,
-                            color: Colors.black26,
-                            offset: Offset(0, 2),
-                          )
-                        ],
-                      ),
-                      child: Text(
-                        'form',
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: deviceSize.width > 600 ? 2 : 1,
-                    child: AuthCard(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return Scaffold(body: AuthCard());
   }
 }
 
 class AuthCard extends StatefulWidget {
+  const AuthCard({super.key});
+
   @override
   _AuthCardState createState() => _AuthCardState();
 }
@@ -86,12 +27,28 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.login;
-  Map<String, String> _authData = {
+  final Map<String, String> _authData = {
     'email': '',
     'password': '',
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An error occured.'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => {Navigator.of(ctx).pop()},
+            child: Text('Okay'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
@@ -102,14 +59,35 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.login) {
-      // Log user in
-      await Provider.of<Auth>(context, listen: false)
-          .login(_authData['email'] as String, _authData['password'] as String);
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context, listen: false).signUp(
-          _authData['email'] as String, _authData['password'] as String);
+    try {
+      if (_authMode == AuthMode.login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false).login(
+            _authData['email'] as String, _authData['password'] as String);
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false).signUp(
+            _authData['email'] as String, _authData['password'] as String);
+      }
+    } on HttpException catch (error) {
+      var errorMessage = 'Authentication faled.';
+      if (error.message.toString().contains('EMAIL_EXITS')) {
+        errorMessage = 'This email is already in use.';
+      } else if (error.message.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'This is not a valid email address.';
+      } else if (error.message.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = 'The inputed password is too weak.';
+      } else if (error.message.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'The user with this email was not found.';
+      } else if (error.message.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid credentials.';
+      }
+
+      _showErrorDialog(errorMessage);
+    } catch (error) {
+      const errorMessage =
+          'Could not authenticate you. Please try again later.';
+      _showErrorDialog(errorMessage);
     }
     setState(() {
       _isLoading = false;
@@ -130,83 +108,254 @@ class _AuthCardState extends State<AuthCard> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      elevation: 8.0,
+    return SingleChildScrollView(
       child: Container(
-        height: _authMode == AuthMode.signup ? 320 : 260,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.signup ? 320 : 260),
-        width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'E-Mail'),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value!.isEmpty || !value.contains('@')) {
-                      return 'Invalid email!';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _authData['email'] = value as String;
-                  },
+        width: double.infinity,
+        color: Colors.white,
+        child: Column(
+          children: [
+            Container(
+              color: Colors.white,
+              width: double.infinity,
+              height: 80,
+              margin: EdgeInsets.only(
+                top: 50,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 24, right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _authMode == AuthMode.login
+                              ? 'LOGIN'
+                              : 'CREATE YOUR ACCOUNT',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          _authMode == AuthMode.login
+                              ? 'Payment on the go!'
+                              : 'Pay by transfer',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        )
+                      ],
+                    ),
+                    CloseButton(),
+                  ],
                 ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                  controller: _passwordController,
-                  validator: (value) {
-                    if (value!.isEmpty || value.length < 5) {
-                      return 'Password is too short!';
-                    }
-                  },
-                  onSaved: (value) {
-                    _authData['password'] = value as String;
-                  },
-                ),
-                if (_authMode == AuthMode.signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.signup,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
-                        : null,
-                  ),
-                SizedBox(
-                  height: 20,
-                ),
-                if (_isLoading)
-                  CircularProgressIndicator()
-                else
-                  ElevatedButton(
-                    // ignore: sort_child_properties_last
-                    child:
-                        Text(_authMode == AuthMode.login ? 'LOGIN' : 'SIGN UP'),
-                    onPressed: _submit,
-                  ),
-                TextButton(
-                  // ignore: sort_child_properties_last
-                  child: Text(
-                      '${_authMode == AuthMode.login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                  onPressed: _switchAuthMode,
-                ),
-              ],
+              ),
             ),
-          ),
+            SizedBox(
+              height: 379,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: 24,
+                        right: 24,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            child: TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: 'Email address'),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value!.isEmpty || !value.contains('@')) {
+                                  return 'Invalid email!';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _authData['email'] = value as String;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_authMode == AuthMode.signup)
+                      Container(
+                        padding: EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              child: TextFormField(
+                                decoration:
+                                    InputDecoration(labelText: 'Phone number'),
+                                keyboardType: TextInputType.phone,
+                                // validator: (value) {
+                                //   if (value!.isEmpty || !value.contains('@')) {
+                                //     return 'Invalid email!';
+                                //   }
+                                //   return null;
+                                // },
+                                // onSaved: (value) {
+                                //   _authData['email'] = value as String;
+                                // },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: 24,
+                        right: 24,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            child: TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: 'Password'),
+                              obscureText: true,
+                              controller: _passwordController,
+                              validator: (value) {
+                                if (value!.isEmpty || value.length < 5) {
+                                  return 'Password is too short!';
+                                }
+                              },
+                              onSaved: (value) {
+                                _authData['password'] = value as String;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_authMode == AuthMode.signup)
+                      Container(
+                        padding: EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              child: TextFormField(
+                                enabled: _authMode == AuthMode.signup,
+                                decoration: InputDecoration(
+                                    labelText: 'Confirm Password'),
+                                obscureText: true,
+                                // validator: _authMode == AuthMode.signup
+                                //     ? (value) {
+                                //         if (value != _passwordController.text) {
+                                //           return 'Passwords do not match!';
+                                //         }
+                                //       }
+                                //     : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_authMode == AuthMode.signup)
+                      Container(
+                        padding: EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              child: TextFormField(
+                                enabled: _authMode == AuthMode.signup,
+                                decoration: InputDecoration(
+                                    labelText: 'Referral code (Optional)'),
+                                obscureText: true,
+                                // validator: _authMode == AuthMode.signup
+                                //     ? (value) {
+                                //         if (value != _passwordController.text) {
+                                //           return 'Passwords do not match!';
+                                //         }
+                                //       }
+                                //     : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              child: _isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24),
+                      child: SizedBox(
+                        width: 35,
+                        height: 35,
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: _isLoading
+                            ? CircularProgressIndicator()
+                            : ElevatedButton(
+                                style: ButtonStyle(),
+                                onPressed: _submit,
+                                child: Text(_authMode == AuthMode.login
+                                    ? 'LOGIN'
+                                    : 'SIGN UP')),
+                      ),
+                    ),
+            ),
+            Center(
+              child: Container(
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Text(_authMode == AuthMode.login
+                      ? 'Don\'t have an account'
+                      : 'Already have an account?'),
+                  TextButton(
+                    // ignore: sort_child_properties_last
+                    child: Text(_authMode == AuthMode.login
+                        ? 'Create account'
+                        : 'Log In'),
+                    onPressed: _switchAuthMode,
+                  ),
+                ]),
+              ),
+            ),
+            Container(
+              width: 350,
+              padding: const EdgeInsets.only(
+                left: 27,
+                right: 27,
+                bottom: 8,
+                top: 8,
+              ),
+              child: Text(
+                  "By tapping signup, you agree to our terms and conditions and privacy policies."),
+            )
+          ],
         ),
       ),
     );

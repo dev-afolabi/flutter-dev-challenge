@@ -1,11 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../models/http_exception.dart';
 
 class Auth with ChangeNotifier {
   String? _token;
   DateTime? _expiryDate;
-  String? _userId;
+  String? userId;
 
   bool get isAuth {
     return token != null;
@@ -23,26 +24,31 @@ class Auth with ChangeNotifier {
   Future<void> _authenticate(String email, String password, urlSegment) async {
     final url = Uri.parse(
         'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyCc2n5r1QkORR6x6ZTglH1825D4nSv2TIo');
-    final response = await http.post(
-      url,
-      body: json.encode(
-        {
-          'email': email,
-          'password': password,
-          'returnSecureToken': true,
-        },
-      ),
-    );
-
-    final responseData = json.decode(response.body);
-    print(responseData);
-    _token = responseData['idToken'];
-    _userId = responseData['localId'];
-    _expiryDate = DateTime.now().add(
-      Duration(
-        seconds: int.parse(responseData['expiresIn']),
-      ),
-    );
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'email': email,
+            'password': password,
+            'returnSecureToken': true,
+          },
+        ),
+      );
+      final responseData = json.decode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']['message']);
+      }
+      _token = responseData['idToken'];
+      userId = responseData['localId'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseData['expiresIn']),
+        ),
+      );
+    } catch (error) {
+      rethrow;
+    }
     notifyListeners();
   }
 

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/dummy_data.dart';
 import '../models/transaction.dart';
@@ -7,16 +10,60 @@ class Transactions with ChangeNotifier {
   // ignore: prefer_final_fields
   List<Transaction> _transactions = dummyData;
 
+  String authToken;
+  String userId;
+
+  Transactions(this.authToken, this.userId, this._transactions);
+
   List<Transaction> get transactions {
     return [..._transactions].reversed.toList();
   }
 
-  void addTransaction(BuildContext ctx, Transaction trx, String amount) {
-    _transactions.add(trx);
-    notifyListeners();
-    Navigator.of(ctx).pushNamed(
-      'payment-details-page',
-      arguments: {'amount': amount},
-    );
+  Future<void> getTransaction() async {
+    final url = Uri.parse(
+        'https://dev-challenge-c0501-default-rtdb.firebaseio.com/transactions.json');
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Transaction> loadedData = [];
+      extractedData.forEach((transId, transData) {
+        loadedData.add(Transaction(
+            amount: transData['amount'],
+            customerName: transData['customerName'],
+            bankName: transData['bankName'],
+            ref: transData['ref'],
+            transactionType: transData['transactionType'],
+            transactionDateTime: transData['transactionDate']));
+      });
+      _transactions = loadedData;
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> addTransaction(Transaction trx, String amount) async {
+    final url = Uri.parse(
+        'https://dev-challenge-c0501-default-rtdb.firebaseio.com/transactions.json');
+
+    print('About to call firebase');
+    var response = await http
+        .post(
+      url,
+      body: json.encode({
+        'bankName': trx.bankName,
+        'amount': trx.amount,
+        'transactionDate': trx.transactionDateTime.toString(),
+        'transactionType': trx.transactionType,
+        'customerName': trx.customerName,
+        'ref': trx.ref,
+        'userId': userId
+      }),
+    )
+        .then((response) {
+      print(json.decode(response.body));
+      _transactions.add(trx);
+      notifyListeners();
+    });
   }
 }
