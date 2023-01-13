@@ -44,7 +44,11 @@ class HomeScreen extends StatelessWidget {
           children: <Widget>[
             Dashboard(),
             QuickLinks(),
-            TransactionList(),
+            Consumer<Transactions>(
+              builder: (ctx, trx, _) => TransactionList(
+                trxList: trx.transactions,
+              ),
+            ),
             BottomNav(),
           ],
         ),

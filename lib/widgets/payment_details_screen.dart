@@ -25,9 +25,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
           as Map<String, Object>)['addTrx'] as Function;
       // Provider.of<Transactions>(context).addTransaction(context,
       //     routeArgs['trx'] as Transaction, routeArgs['amount'] as String);
-      print(addTrans);
-      print(routeArgs['trx']);
-      print(routeArgs['amount'] as String);
+      print(routeArgs['transaction']);
       addTrans(routeArgs['transaction'] as Transaction,
           routeArgs['amount'] as String);
     }

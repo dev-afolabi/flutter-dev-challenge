@@ -46,10 +46,10 @@ class Auth with ChangeNotifier {
           seconds: int.parse(responseData['expiresIn']),
         ),
       );
+      notifyListeners();
     } catch (error) {
       rethrow;
     }
-    notifyListeners();
   }
 
   Future<void> signUp(String email, String password) async {

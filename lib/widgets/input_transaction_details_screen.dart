@@ -2,6 +2,7 @@ import 'package:dev_challenge/models/dummy_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth_provider.dart';
 import '../providers/transactions_provider.dart';
 
 class InputTransactionDetails extends StatefulWidget {
@@ -32,8 +33,14 @@ class _InputTransactionDetailsState extends State<InputTransactionDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (ctx) => Transactions('', '', []),
+    return ChangeNotifierProxyProvider<Auth, Transactions>(
+      update: ((_, authToken, previousTransactions) => Transactions(
+          authToken.token as String,
+          authToken.userId as String,
+          previousTransactions == null
+              ? []
+              : previousTransactions.transactions)),
+      create: (_) => Transactions('', '', []),
       child: Consumer<Transactions>(
         builder: (context, trx, _) => Scaffold(
           body: SingleChildScrollView(
