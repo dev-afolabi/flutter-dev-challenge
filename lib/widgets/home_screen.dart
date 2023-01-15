@@ -12,8 +12,6 @@ import '../widgets/dashboard.dart';
 import '../widgets/quick_links.dart';
 
 class HomeScreen extends StatelessWidget {
-  final List<Transaction> transactions = dummyData;
-
   void startAddNewTransaction(BuildContext context) {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(

@@ -15,7 +15,7 @@ class TransactionHelper {
         transactionDateTime: DateTime.now(),
         transactionType: type,
         bankName: _getRandomElement<String>(banks),
-        customerName: _getRandomElement<String>(banks),
+        customerName: _getRandomElement<String>(customerNames),
         ref: DateTime.now().millisecondsSinceEpoch.toString());
   }
 }
@@ -42,87 +42,4 @@ const customerNames = [
   'Nico Berg',
   'Israel Hull',
   'Lucas Beasley'
-];
-
-final dummyData = [
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  ),
-  Transaction(
-    amount: 2000,
-    transactionDateTime: DateTime.now(),
-    transactionType: true,
-    bankName: 'Firstbank of Nigeria',
-    customerName: 'William Johnson',
-    ref: DateTime.now().millisecondsSinceEpoch.toString(),
-  )
 ];

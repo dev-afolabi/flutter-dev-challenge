@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './widgets/home_screen.dart';
 import './widgets/payment_details_screen.dart';
 import './providers/transactions_provider.dart';
+import 'models/transaction.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth_screen.dart';
 
@@ -31,10 +32,24 @@ MaterialColor buildMaterialColor(Color color) {
   return MaterialColor(color.value, swatch);
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+
+  Future<void> addTransaction(
+      Transaction trx, String amount, String token) async {
+    setState(() async {
+      await Transactions('', '', []).addTransaction(trx, amount);
+      print('called set state');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -64,10 +79,10 @@ class MyApp extends StatelessWidget {
                     ),
               ),
               home: auth.isAuth ? HomeScreen() : AuthScreen(),
-              routes: {
-                'payment-details-page': (ctx) => PaymentDetailsPage(),
-                'home': (ctx) => HomeScreen(),
-              },
+              // routes: {
+              //   'payment-details-page': (ctx) =>
+              //       PaymentDetailsPage(token: auth.token!),
+              // },
             )),
       ),
     );

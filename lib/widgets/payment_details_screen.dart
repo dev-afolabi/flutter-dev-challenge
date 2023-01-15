@@ -1,12 +1,18 @@
 import 'dart:math';
+import 'package:dev_challenge/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/transaction.dart';
+import '../providers/auth_provider.dart';
 import '../providers/transactions_provider.dart';
 
 class PaymentDetailsPage extends StatefulWidget {
-  const PaymentDetailsPage({super.key});
+  //final String token;
+  final Transaction trx;
+  final String amount;
+  const PaymentDetailsPage(
+      {super.key, required this.amount, required this.trx});
 
   @override
   State<PaymentDetailsPage> createState() => _PaymentDetailsPageState();
@@ -14,23 +20,31 @@ class PaymentDetailsPage extends StatefulWidget {
 
 class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   bool isInit = true;
+  bool isLoading = true;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (isInit) {
-      final routeArgs =
-          ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
-
-      final addTrans = (ModalRoute.of(context)?.settings.arguments
-          as Map<String, Object>)['addTrx'] as Function;
-      // Provider.of<Transactions>(context).addTransaction(context,
-      //     routeArgs['trx'] as Transaction, routeArgs['amount'] as String);
-      print(routeArgs['transaction']);
-      addTrans(routeArgs['transaction'] as Transaction,
-          routeArgs['amount'] as String);
+      await Provider.of<Transactions>(context)
+          .addTransaction(widget.trx, widget.amount);
     }
     isInit = false;
     super.didChangeDependencies();
+  }
+
+  void goTodashboard() {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => ChangeNotifierProxyProvider<Auth, Transactions>(
+        create: ((context) => Transactions('', '', [])),
+        update: ((_, authToken, previousTransactions) => Transactions(
+            authToken.token as String,
+            authToken.userId as String,
+            previousTransactions == null
+                ? []
+                : previousTransactions.transactions)),
+        child: HomeScreen(),
+      ),
+    ));
   }
 
   String generateAccountNumber() {
@@ -40,13 +54,45 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
     return l.join("");
   }
 
+  _showSimpleModalDialog(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            child: Container(
+              constraints: BoxConstraints(maxHeight: 350),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      textAlign: TextAlign.justify,
+                      text: TextSpan(
+                          text: "",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              color: Colors.black,
+                              wordSpacing: 1)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final routeArgs =
-        ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
+    // final routeArgs =
+    //     ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
 
-    final addTrans = (ModalRoute.of(context)?.settings.arguments
-        as Map<String, Object>)['addTrx'];
+    // final addTrans = (ModalRoute.of(context)?.settings.arguments
+    //     as Map<String, Object>)['addTrx'];
 
     return Scaffold(
       body: Container(
@@ -95,7 +141,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
               padding: EdgeInsets.only(top: 10, bottom: 10),
               margin: EdgeInsets.only(
                 top: 8,
-                bottom: 165,
+                bottom: 50,
                 left: 15,
                 right: 15,
               ),
@@ -166,10 +212,24 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Amount'),
-                        Text(routeArgs['amount'] as String),
+                        Text(widget.amount as String),
                       ],
                     ),
                   ),
+                ],
+              ),
+            ),
+            Container(
+              height: 80,
+              margin: EdgeInsets.only(bottom: 30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  //CircularProgressIndicator(),
+                  Text(
+                    "account expires in 30",
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  )
                 ],
               ),
             ),
@@ -180,7 +240,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                 height: 50,
                 child: ElevatedButton(
                   style: ButtonStyle(),
-                  onPressed: () {},
+                  onPressed: goTodashboard,
                   child: Text('Share'),
                 ),
               ),
