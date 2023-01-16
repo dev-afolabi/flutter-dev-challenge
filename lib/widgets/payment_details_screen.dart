@@ -26,7 +26,11 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   void didChangeDependencies() async {
     if (isInit) {
       await Provider.of<Transactions>(context)
-          .addTransaction(widget.trx, widget.amount);
+          .addTransaction(widget.trx, widget.amount)
+          .then((value) {
+        isInit = false;
+        _showSimpleModalDialog(context);
+      });
     }
     isInit = false;
     super.didChangeDependencies();
@@ -57,28 +61,84 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   _showSimpleModalDialog(context) {
     showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           return Dialog(
+            insetPadding: EdgeInsets.all(10),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
+                borderRadius: BorderRadius.circular(8.0)),
             child: Container(
-              constraints: BoxConstraints(maxHeight: 350),
+              width: double.infinity,
+              height: 500,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      textAlign: TextAlign.justify,
-                      text: TextSpan(
-                          text: "",
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 60),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: CloseButton(
+                          onPressed: goTodashboard,
+                        ),
+                      ),
+                      Container(
+                        height: 200,
+                        //margin: EdgeInsets.only(t),
+                        child: Center(
+                          child: widget.trx.transactionType
+                              ? Image.asset(
+                                  'assets/icons/Wallet_Flatline 2.png',
+                                )
+                              : Image.asset(
+                                  'assets/icons/Failed-Transaction.png',
+                                ),
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          widget.trx.transactionType
+                              ? 'Payment Received!'
+                              : 'Transaction failed!',
                           style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Colors.black,
-                              wordSpacing: 1)),
-                    ),
-                  ],
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 290,
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                              text:
+                                  "The sum of #${widget.amount} was succuessfuly paid into your account.",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  wordSpacing: 1)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 24, right: 24),
+                        child: Container(
+                          width: 180,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ButtonStyle(),
+                            onPressed: goTodashboard,
+                            child: Text(
+                              widget.trx.transactionType
+                                  ? 'Go to dashboard'
+                                  : 'Retry',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -88,12 +148,6 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final routeArgs =
-    //     ModalRoute.of(context)?.settings.arguments as Map<String, Object>;
-
-    // final addTrans = (ModalRoute.of(context)?.settings.arguments
-    //     as Map<String, Object>)['addTrx'];
-
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -212,7 +266,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Amount'),
-                        Text(widget.amount as String),
+                        Text(widget.amount),
                       ],
                     ),
                   ),
@@ -225,7 +279,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  //CircularProgressIndicator(),
+                  if (isLoading) CircularProgressIndicator(),
                   Text(
                     "account expires in 30",
                     style: TextStyle(color: Colors.red, fontSize: 16),
@@ -240,7 +294,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                 height: 50,
                 child: ElevatedButton(
                   style: ButtonStyle(),
-                  onPressed: goTodashboard,
+                  onPressed: () {},
                   child: Text('Share'),
                 ),
               ),

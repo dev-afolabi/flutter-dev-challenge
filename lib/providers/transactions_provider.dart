@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../models/dummy_data.dart';
 import '../models/transaction.dart';
@@ -12,6 +13,7 @@ class Transactions with ChangeNotifier {
 
   String authToken;
   String userId;
+  bool loaded = false;
 
   Transactions(this.authToken, this.userId, this._transactions);
 
@@ -19,9 +21,18 @@ class Transactions with ChangeNotifier {
     return [..._transactions].reversed.toList();
   }
 
+  String get balance {
+    double amount = 0.0;
+    transactions.forEach((element) {
+      amount += element.amount;
+    });
+    var formatter = NumberFormat('#,##0.00');
+    return formatter.format(amount);
+  }
+
   Future<void> getTransaction() async {
     final url = Uri.parse(
-        'https://dev-challenge-c0501-default-rtdb.firebaseio.com/transactions.json?auth=$authToken');
+        'https://dev-challenge-c0501-default-rtdb.firebaseio.com/users/transactions.json?auth=$authToken&orderBy="userId"&equalTo="$userId"');
     try {
       print('this is he authtoken: ' + authToken);
       print('makin the get request');
@@ -33,7 +44,6 @@ class Transactions with ChangeNotifier {
       } catch (e) {
         print('I caught the error');
       }
-      print(extractedData);
       final List<Transaction> loadedData = [];
       if (extractedData != null) {
         extractedData.forEach((transId, transData) {
@@ -49,14 +59,9 @@ class Transactions with ChangeNotifier {
           );
         });
 
-        print('below is loaded data');
-        print(loadedData);
         _transactions = loadedData;
-        print('below is loaded data');
-        print(_transactions);
+        loaded = true;
         notifyListeners();
-        print('I got to notify listeners');
-        print(_transactions.length);
       }
     } catch (e) {
       rethrow;
@@ -65,11 +70,8 @@ class Transactions with ChangeNotifier {
 
   Future<void> addTransaction(Transaction trx, String amount) async {
     final url = Uri.parse(
-        'https://dev-challenge-c0501-default-rtdb.firebaseio.com/transactions.json?auth=$authToken');
-
-    print('this is the authtoken: ' + authToken);
-    print('makin the get request');
-    var response = await http
+        'https://dev-challenge-c0501-default-rtdb.firebaseio.com/users/transactions.json?auth=$authToken');
+    await http
         .post(
       url,
       body: json.encode({
@@ -83,7 +85,6 @@ class Transactions with ChangeNotifier {
       }),
     )
         .then((response) {
-      print(response.body);
       _transactions = [..._transactions, trx];
       notifyListeners();
     });

@@ -1,3 +1,4 @@
+import 'package:dev_challenge/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +42,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  var _isShown = true;
+
+  toggleIsShown() {
+    setState(() {
+      // Future.delayed(Duration(seconds: 5), () {
+      //   _isShown = true;
+      // });
+      _isShown = true;
+    });
+  }
 
   Future<void> addTransaction(
       Transaction trx, String amount, String token) async {
@@ -52,39 +63,35 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        // ChangeNotifierProxyProvider<Auth, Transactions>(
-        //   update: ((_, authToken, previousTransactions) => Transactions(
-        //       authToken.token as String,
-        //       authToken.userId as String,
-        //       previousTransactions == null
-        //           ? []
-        //           : previousTransactions.transactions)),
-        //   create: (_) => Transactions('', '', []),
-        // ),
-        ChangeNotifierProvider(
-          create: ((context) => Auth()),
-        ),
-      ],
-      child: Consumer<Auth>(
-        builder: ((context, auth, _) => MaterialApp(
-              title: 'Dev Challenge',
-              theme: ThemeData(
-                primarySwatch: buildMaterialColor(
-                  const Color(0xff123CAA),
-                ),
-                textTheme: ThemeData.light().textTheme.copyWith(
-                      bodyText1: TextStyle(color: Colors.white),
-                    ),
+    return !_isShown
+        ? SplashScreen(
+            toggleIsShown: toggleIsShown,
+          )
+        : MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: ((context) => Auth()),
               ),
-              home: auth.isAuth ? HomeScreen() : AuthScreen(),
-              // routes: {
-              //   'payment-details-page': (ctx) =>
-              //       PaymentDetailsPage(token: auth.token!),
-              // },
-            )),
-      ),
-    );
+            ],
+            child: Consumer<Auth>(
+              builder: ((context, auth, _) => MaterialApp(
+                    title: 'Dev Challenge',
+                    theme: ThemeData(
+                      primarySwatch: buildMaterialColor(
+                        const Color(0xff123CAA),
+                      ),
+                      textTheme: ThemeData.light().textTheme.copyWith(
+                            bodyText1: TextStyle(color: Colors.white),
+                          ),
+                    ),
+                    home: auth.isAuth ? HomeScreen() : AuthScreen(),
+                    //home: SplashScreen(),
+                    // routes: {
+                    //   'payment-details-page': (ctx) =>
+                    //       PaymentDetailsPage(token: auth.token!),
+                    // },
+                  )),
+            ),
+          );
   }
 }

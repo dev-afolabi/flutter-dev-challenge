@@ -7,7 +7,9 @@ class QuickLinks extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 139,
+      margin: EdgeInsets.only(bottom: 10),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(

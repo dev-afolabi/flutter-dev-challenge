@@ -40,6 +40,11 @@ dependencies:
   flutter_guid: ^0.3.1
   http: ^0.13.5
   provider: ^6.0.5
+  flutter_shimmer: ^2.1.2
+  dots_indicator: ^2.1.0
+  hive: ^1.4.4
+
+
 
 dev_dependencies:
   flutter_test:
@@ -74,8 +79,13 @@ flutter:
     - assets/icons/mdi_database-arrow-down-outline.png
     - assets/icons/ph_user-light.png
     - assets/icons/carbon_send-alt2.png
+    - assets/icons/Wallet_Flatline 2.png
+    - assets/icons/Failed-Transaction.png
+    - assets/icons/mdi_database-arrow-up-outline.png
     - assets/images/Lines.png
     - assets/images/Lines_2.png
+    - assets/images/Splashline.png
+
     
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

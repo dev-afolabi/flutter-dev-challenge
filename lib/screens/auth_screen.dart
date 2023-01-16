@@ -115,64 +115,78 @@ class _AuthCardState extends State<AuthCard> {
         child: Column(
           children: [
             Container(
-              color: Colors.white,
               width: double.infinity,
               height: 80,
               margin: EdgeInsets.only(
                 top: 50,
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 24, right: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _authMode == AuthMode.login
-                              ? 'LOGIN'
-                              : 'CREATE YOUR ACCOUNT',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        _authMode == AuthMode.login
+                            ? 'LOGIN'
+                            : 'CREATE YOUR ACCOUNT',
+                        style: TextStyle(
+                          color: Color(0xff123CAA),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          _authMode == AuthMode.login
-                              ? 'Payment on the go!'
-                              : 'Pay by transfer',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
-                    ),
-                    CloseButton(),
-                  ],
-                ),
+                      ),
+                      Text(
+                        _authMode == AuthMode.login
+                            ? 'Payment on the go!'
+                            : 'Pay by transfer',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      )
+                    ],
+                  ),
+                ],
               ),
             ),
             SizedBox(
-              height: 379,
+              height: 40,
+            ),
+            SizedBox(
+              height: _authMode == AuthMode.signup ? 379 : 250,
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
                       padding: EdgeInsets.only(
                         left: 24,
                         right: 24,
                       ),
+                      margin: EdgeInsets.only(bottom: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             child: TextFormField(
-                              decoration:
-                                  InputDecoration(labelText: 'Email address'),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: BorderSide(
+                                        color: Colors.grey.shade300)),
+                                labelText: "Email address",
+                                helperStyle:
+                                    TextStyle(color: Colors.grey.shade200),
+                                helperMaxLines: 1,
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: EdgeInsets.all(10),
+                                prefixIcon: Icon(Icons.email_outlined),
+                                hintStyle:
+                                    TextStyle(color: Colors.grey.shade200),
+                              ),
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value!.isEmpty || !value.contains('@')) {
@@ -194,13 +208,28 @@ class _AuthCardState extends State<AuthCard> {
                           left: 24,
                           right: 24,
                         ),
+                        margin: EdgeInsets.only(bottom: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
                               child: TextFormField(
-                                decoration:
-                                    InputDecoration(labelText: 'Phone number'),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(7),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade300)),
+                                  labelText: "Phone number",
+                                  helperStyle:
+                                      TextStyle(color: Colors.grey.shade200),
+                                  helperMaxLines: 1,
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  contentPadding: EdgeInsets.all(10),
+                                  prefixIcon: Icon(Icons.phone_outlined),
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey.shade200),
+                                ),
                                 keyboardType: TextInputType.phone,
                                 // validator: (value) {
                                 //   if (value!.isEmpty || !value.contains('@')) {
@@ -221,13 +250,28 @@ class _AuthCardState extends State<AuthCard> {
                         left: 24,
                         right: 24,
                       ),
+                      margin: EdgeInsets.only(bottom: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             child: TextFormField(
-                              decoration:
-                                  InputDecoration(labelText: 'Password'),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7),
+                                    borderSide: BorderSide(
+                                        color: Colors.grey.shade300)),
+                                labelText: "Password",
+                                helperStyle:
+                                    TextStyle(color: Colors.grey.shade200),
+                                helperMaxLines: 1,
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: EdgeInsets.all(10),
+                                prefixIcon: Icon(Icons.lock_outline),
+                                hintStyle:
+                                    TextStyle(color: Colors.grey.shade200),
+                              ),
                               obscureText: true,
                               controller: _passwordController,
                               validator: (value) {
@@ -249,6 +293,7 @@ class _AuthCardState extends State<AuthCard> {
                           left: 24,
                           right: 24,
                         ),
+                        margin: EdgeInsets.only(bottom: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -256,7 +301,21 @@ class _AuthCardState extends State<AuthCard> {
                               child: TextFormField(
                                 enabled: _authMode == AuthMode.signup,
                                 decoration: InputDecoration(
-                                    labelText: 'Confirm Password'),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(7),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade300)),
+                                  labelText: "Confirm password",
+                                  helperStyle:
+                                      TextStyle(color: Colors.grey.shade200),
+                                  helperMaxLines: 1,
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  contentPadding: EdgeInsets.all(10),
+                                  prefixIcon: Icon(Icons.lock_outline),
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey.shade200),
+                                ),
                                 obscureText: true,
                                 // validator: _authMode == AuthMode.signup
                                 //     ? (value) {
@@ -283,7 +342,22 @@ class _AuthCardState extends State<AuthCard> {
                               child: TextFormField(
                                 enabled: _authMode == AuthMode.signup,
                                 decoration: InputDecoration(
-                                    labelText: 'Referral code (Optional)'),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(7),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade300)),
+                                  labelText: "Referal code (Optional)",
+                                  helperStyle:
+                                      TextStyle(color: Colors.grey.shade200),
+                                  helperMaxLines: 1,
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  contentPadding: EdgeInsets.all(10),
+                                  prefixIcon:
+                                      Icon(Icons.account_circle_outlined),
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey.shade200),
+                                ),
                                 obscureText: true,
                                 // validator: _authMode == AuthMode.signup
                                 //     ? (value) {
@@ -327,6 +401,9 @@ class _AuthCardState extends State<AuthCard> {
                       ),
                     ),
             ),
+            SizedBox(
+              height: 10,
+            ),
             Center(
               child: Container(
                 child:
@@ -352,8 +429,29 @@ class _AuthCardState extends State<AuthCard> {
                 bottom: 8,
                 top: 8,
               ),
-              child: Text(
-                  "By tapping signup, you agree to our terms and conditions and privacy policies."),
+              // child: Text(
+              //     "By tapping signup, you agree to our terms and conditions and privacy policies."),
+              child: RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(text: 'By tapping signup, you agree to our'),
+                    TextSpan(
+                      text: ' terms and conditions',
+                      style: TextStyle(
+                        color: Color(0xff123CAA),
+                      ),
+                    ),
+                    TextSpan(text: ' and '),
+                    TextSpan(
+                      text: 'privacy policies.',
+                      style: TextStyle(
+                        color: Color(0xff123CAA),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
           ],
         ),
