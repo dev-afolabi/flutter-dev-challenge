@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:dev_challenge/start_screen.dart';
 import 'package:dev_challenge/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,21 +37,6 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
     super.didChangeDependencies();
   }
 
-  void goTodashboard() {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => ChangeNotifierProxyProvider<Auth, Transactions>(
-        create: ((context) => Transactions('', '', [])),
-        update: ((_, authToken, previousTransactions) => Transactions(
-            authToken.token as String,
-            authToken.userId as String,
-            previousTransactions == null
-                ? []
-                : previousTransactions.transactions)),
-        child: HomeScreen(),
-      ),
-    ));
-  }
-
   String generateAccountNumber() {
     var rng = Random();
     var l = List.generate(8, (_) => rng.nextInt(10));
@@ -62,86 +48,9 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
     showDialog(
         context: context,
         builder: (context) {
-          return Dialog(
-            insetPadding: EdgeInsets.all(10),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0)),
-            child: Container(
-              width: double.infinity,
-              height: 500,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 60),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: CloseButton(
-                          onPressed: goTodashboard,
-                        ),
-                      ),
-                      Container(
-                        height: 200,
-                        //margin: EdgeInsets.only(t),
-                        child: Center(
-                          child: widget.trx.transactionType
-                              ? Image.asset(
-                                  'assets/icons/Wallet_Flatline 2.png',
-                                )
-                              : Image.asset(
-                                  'assets/icons/Failed-Transaction.png',
-                                ),
-                        ),
-                      ),
-                      Center(
-                        child: Text(
-                          widget.trx.transactionType
-                              ? 'Payment Received!'
-                              : 'Transaction failed!',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 290,
-                        child: RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                              text:
-                                  "The sum of #${widget.amount} was succuessfuly paid into your account.",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  wordSpacing: 1)),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 24, right: 24),
-                        child: Container(
-                          width: 180,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ButtonStyle(),
-                            onPressed: goTodashboard,
-                            child: Text(
-                              widget.trx.transactionType
-                                  ? 'Go to dashboard'
-                                  : 'Retry',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          return MyDialog(
+            trx: widget.trx,
+            amount: widget.amount,
           );
         });
   }
@@ -300,6 +209,109 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MyDialog extends StatefulWidget {
+  final Transaction trx;
+  final String amount;
+  const MyDialog({super.key, required this.amount, required this.trx});
+
+  @override
+  _MyDialogState createState() => _MyDialogState();
+}
+
+class _MyDialogState extends State<MyDialog> {
+  void goTodashboard() {
+    // Navigator.of(context).pop(MaterialPageRoute(
+    //   builder: (context) => StartScreen(),
+    // ));
+    Navigator.of(context).pop();
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      child: Container(
+        width: double.infinity,
+        height: 500,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Container(
+            margin: EdgeInsets.only(bottom: 60),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: CloseButton(
+                    onPressed: goTodashboard,
+                  ),
+                ),
+                Container(
+                  height: 200,
+                  //margin: EdgeInsets.only(t),
+                  child: Center(
+                    child: widget.trx.transactionType
+                        ? Image.asset(
+                            'assets/icons/Wallet_Flatline 2.png',
+                          )
+                        : Image.asset(
+                            'assets/icons/Failed-Transaction.png',
+                          ),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    widget.trx.transactionType
+                        ? 'Payment Received!'
+                        : 'Transaction failed!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 290,
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                        text:
+                            "The sum of #${widget.amount} was succuessfuly paid into your account.",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: Colors.black,
+                            wordSpacing: 1)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24),
+                  child: Container(
+                    width: 180,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ButtonStyle(),
+                      onPressed: goTodashboard,
+                      child: Text(
+                        widget.trx.transactionType
+                            ? 'Go to dashboard'
+                            : 'Retry',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

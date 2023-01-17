@@ -21,6 +21,18 @@ class Transactions with ChangeNotifier {
     return [..._transactions].reversed.toList();
   }
 
+  List<Transaction> get failedTransactions {
+    return [..._transactions]
+        .where((element) => element.transactionType == false)
+        .toList();
+  }
+
+  List<Transaction> get successTransactions {
+    return [..._transactions]
+        .where((element) => element.transactionType == true)
+        .toList();
+  }
+
   String get balance {
     double amount = 0.0;
     transactions.forEach((element) {

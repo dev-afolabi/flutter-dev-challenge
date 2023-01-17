@@ -1,36 +1,11 @@
-import 'package:dev_challenge/splash_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'dart:async';
+import 'dart:math';
 
-import './widgets/home_screen.dart';
-import './widgets/payment_details_screen.dart';
-import './providers/transactions_provider.dart';
-import 'models/transaction.dart';
-import 'providers/auth_provider.dart';
-import 'screens/auth_screen.dart';
+import 'package:dev_challenge/start_screen.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
-}
-
-MaterialColor buildMaterialColor(Color color) {
-  List strengths = <double>[.05];
-  Map<int, Color> swatch = {};
-  final int r = color.red, g = color.green, b = color.blue;
-
-  for (int i = 1; i < 10; i++) {
-    strengths.add(0.1 * i);
-  }
-  strengths.forEach((strength) {
-    final double ds = 0.5 - strength;
-    swatch[(strength * 1000).round()] = Color.fromRGBO(
-      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
-      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
-      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
-      1,
-    );
-  });
-  return MaterialColor(color.value, swatch);
 }
 
 class MyApp extends StatefulWidget {
@@ -42,56 +17,86 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
-  var _isShown = true;
-
-  toggleIsShown() {
-    setState(() {
-      // Future.delayed(Duration(seconds: 5), () {
-      //   _isShown = true;
-      // });
-      _isShown = true;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Home(),
+    );
   }
+}
 
-  Future<void> addTransaction(
-      Transaction trx, String amount, String token) async {
-    setState(() async {
-      await Transactions('', '', []).addTransaction(trx, amount);
-      print('called set state');
-    });
+class Home extends StatefulWidget {
+  const Home({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+        Duration(seconds: 3),
+        () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => StartScreen())));
   }
 
   @override
   Widget build(BuildContext context) {
-    return !_isShown
-        ? SplashScreen(
-            toggleIsShown: toggleIsShown,
-          )
-        : MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: ((context) => Auth()),
+    return Scaffold(
+      body: Stack(children: [
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: Color(0xff123CAA),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 155,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/Splashline.png'),
+                  ),
+                ),
+              ),
+              Center(
+                child: Text(
+                  'Parkpay',
+                  style: TextStyle(
+                      fontSize: 56,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white),
+                ),
+              ),
+              Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationX(pi),
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(pi),
+                  child: Container(
+                    width: double.infinity,
+                    height: 155,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/Splashline.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
-            child: Consumer<Auth>(
-              builder: ((context, auth, _) => MaterialApp(
-                    title: 'Dev Challenge',
-                    theme: ThemeData(
-                      primarySwatch: buildMaterialColor(
-                        const Color(0xff123CAA),
-                      ),
-                      textTheme: ThemeData.light().textTheme.copyWith(
-                            bodyText1: TextStyle(color: Colors.white),
-                          ),
-                    ),
-                    home: auth.isAuth ? HomeScreen() : AuthScreen(),
-                    //home: SplashScreen(),
-                    // routes: {
-                    //   'payment-details-page': (ctx) =>
-                    //       PaymentDetailsPage(token: auth.token!),
-                    // },
-                  )),
-            ),
-          );
+          ),
+        ),
+      ]),
+    );
   }
 }

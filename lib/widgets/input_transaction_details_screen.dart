@@ -153,6 +153,7 @@ class _InputTransactionDetailsState extends State<InputTransactionDetails> {
                                   border: OutlineInputBorder(),
                                   hintText: "Description",
                                 ),
+                                textInputAction: TextInputAction.done,
                               ),
                             ),
                           ],

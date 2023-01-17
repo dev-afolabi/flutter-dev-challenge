@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/transaction.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transactions_provider.dart';
 import '../widgets/select_transaction.dart';
-import '../models/dummy_data.dart';
-import 'bottom_nav.dart';
 import 'home_screen2.dart';
 import 'profile_screen.dart';
-import 'transaction_list.dart';
-import '../widgets/dashboard.dart';
-import '../widgets/quick_links.dart';
 import 'transactions_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +16,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _pages = <Widget>[
+  // ignore: prefer_final_fields
+  static List<Widget> _pages = <Widget>[
     HomeScreen2(),
     TransactionsScreen(),
     Profile(),
@@ -63,30 +58,25 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/icons/majesticons_home-analytics.png',
-                width: 23,
-                height: 23,
-                fit: BoxFit.cover,
-              ),
+              icon: Icon(Icons.home_sharp),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.camera),
+              icon: Icon(Icons.upload_outlined),
               label: 'Transactions',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.no_accounts_rounded),
+              icon: Icon(Icons.account_circle_outlined),
               label: 'Profile',
             ),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () => startAddNewTransaction(context),
-        //   child: const Icon(Icons.add),
-        // ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => startAddNewTransaction(context),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
