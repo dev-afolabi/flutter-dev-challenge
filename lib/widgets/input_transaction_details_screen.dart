@@ -22,22 +22,14 @@ class _InputTransactionDetailsState extends State<InputTransactionDetails> {
   void generatePaymentDetails(BuildContext ctx, bool type) {
     var trx = TransactionHelper()
         .generateTransaction(amountInputController.text, type);
-
-    Navigator.of(ctx).pushReplacement(MaterialPageRoute(
-      builder: (context) => ChangeNotifierProxyProvider<Auth, Transactions>(
-        create: ((context) => Transactions('', '', [])),
-        update: ((_, authToken, previousTransactions) => Transactions(
-            authToken.token as String,
-            authToken.userId as String,
-            previousTransactions == null
-                ? []
-                : previousTransactions.transactions)),
-        child: PaymentDetailsPage(
+    Navigator.of(ctx).pushReplacement(
+      MaterialPageRoute(builder: (_) {
+        return PaymentDetailsPage(
           amount: amountInputController.text,
           trx: trx,
-        ),
-      ),
-    ));
+        );
+      }),
+    );
   }
 
   @override

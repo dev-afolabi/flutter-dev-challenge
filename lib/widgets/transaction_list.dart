@@ -13,30 +13,11 @@ class TransactionList extends StatefulWidget {
 }
 
 class _TransactionListState extends State<TransactionList> {
-  var isInit = true;
-  var isLoading = false;
-
-  @override
-  void didChangeDependencies() {
-    if (isInit) {
-      setState(() {
-        isLoading = true;
-      });
-      Provider.of<Transactions>(context).getTransaction().then((value) {
-        setState(() {
-          isLoading = false;
-        });
-      });
-    }
-    isInit = false;
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     final transactions =
         Provider.of<Transactions>(context).transactions.reversed.toList();
-    return isLoading
+    return !Provider.of<Transactions>(context).loaded
         ? Expanded(
             child: Center(child: CircularProgressIndicator()),
           )
@@ -51,101 +32,67 @@ class _TransactionListState extends State<TransactionList> {
               )
             : Expanded(
                 child: ListView.builder(
-                padding: EdgeInsets.only(
-                  top: 2,
-                  bottom: 3,
-                  left: 12,
-                  right: 12,
-                ),
-                itemBuilder: (ctx, index) {
-                  return Container(
-                    height: 80,
-                    margin: EdgeInsets.only(bottom: 4),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5.0),
-                        border: Border.all(color: Colors.grey, width: 0.15)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50),
+                  padding: EdgeInsets.only(
+                    top: 2,
+                    bottom: 3,
+                    left: 12,
+                    right: 12,
+                  ),
+                  itemBuilder: (ctx, index) {
+                    return Container(
+                      height: 80,
+                      margin: EdgeInsets.only(bottom: 4),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5.0),
+                          border: Border.all(color: Colors.grey, width: 0.15)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(50),
+                                ),
+                                border: Border.all(
+                                  color: transactions[index].transactionType
+                                      ? Colors.green
+                                      : Colors.red,
+                                ), //border corner radius
                               ),
-                              border: Border.all(
-                                color: transactions[index].transactionType
-                                    ? Colors.green
-                                    : Colors.red,
-                              ), //border corner radius
-                            ),
-                            child: Image.asset(
-                              transactions[index].transactionType
-                                  ? 'assets/icons/mdi_database-arrow-down-outline.png'
-                                  : 'assets/icons/mdi_database-arrow-up-outline.png',
-                              width: 20,
-                              height: 20,
+                              child: Image.asset(
+                                transactions[index].transactionType
+                                    ? 'assets/icons/mdi_database-arrow-down-outline.png'
+                                    : 'assets/icons/mdi_database-arrow-up-outline.png',
+                                width: 20,
+                                height: 20,
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          width: 150,
-                          padding: EdgeInsets.only(top: 10),
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  transactions[index].customerName,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                Text(
-                                  transactions[index].bankName,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w300),
-                                ),
-                                Text(
-                                  transactions[index].ref,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                              ]),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(right: 9, top: 6),
-                            width: 90,
+                          Container(
+                            width: 150,
+                            padding: EdgeInsets.only(top: 10),
+                            alignment: Alignment.centerLeft,
                             child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    NumberFormat('#,##0.0')
-                                        .format(transactions[index].amount),
+                                    transactions[index].customerName,
                                     style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
                                   ),
                                   Text(
-                                    DateFormat('EEE, d MMM y').format(
-                                        transactions[index]
-                                            .transactionDateTime),
+                                    transactions[index].bankName,
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w300,
-                                    ),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300),
                                   ),
                                   Text(
-                                    DateFormat().add_jm().format(
-                                        transactions[index]
-                                            .transactionDateTime),
+                                    transactions[index].ref,
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w300,
@@ -153,12 +100,47 @@ class _TransactionListState extends State<TransactionList> {
                                   ),
                                 ]),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                itemCount: transactions.length,
-              ));
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(right: 9, top: 6),
+                              width: 90,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      NumberFormat('#,##0.0')
+                                          .format(transactions[index].amount),
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Text(
+                                      DateFormat('EEE, d MMM y').format(
+                                          transactions[index]
+                                              .transactionDateTime),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormat().add_jm().format(
+                                          transactions[index]
+                                              .transactionDateTime),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                    ),
+                                  ]),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: transactions.length,
+                ),
+              );
   }
 }

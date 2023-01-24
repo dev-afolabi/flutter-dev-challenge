@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/transaction.dart';
 import '../providers/auth_provider.dart';
 import '../providers/transactions_provider.dart';
 import '../widgets/select_transaction.dart';
@@ -15,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  var isInit = true;
+  //var isLoading = false;
 
   // ignore: prefer_final_fields
   static List<Widget> _pages = <Widget>[
@@ -22,6 +25,15 @@ class _HomeScreenState extends State<HomeScreen> {
     TransactionsScreen(),
     Profile(),
   ];
+
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      Provider.of<Transactions>(context).getTransaction();
+    }
+    isInit = false;
+    super.didChangeDependencies();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -45,38 +57,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProxyProvider<Auth, Transactions>(
-      update: ((_, authToken, previousTransactions) => Transactions(
-          authToken.token as String,
-          authToken.userId as String,
-          previousTransactions == null
-              ? []
-              : previousTransactions.transactions)),
-      create: (_) => Transactions('', '', []),
-      child: Scaffold(
-        body: _pages.elementAt(_selectedIndex),
-        bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_sharp),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.upload_outlined),
-              label: 'Transactions',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_outlined),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => startAddNewTransaction(context),
-          child: const Icon(Icons.add),
-        ),
+    return Scaffold(
+      body: _pages.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_sharp),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.upload_outlined),
+            label: 'Transactions',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_outlined),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => startAddNewTransaction(context),
+        child: const Icon(Icons.add),
       ),
     );
   }

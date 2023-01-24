@@ -2,14 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-
-import '../models/dummy_data.dart';
 import '../models/transaction.dart';
 
 class Transactions with ChangeNotifier {
   // ignore: prefer_final_fields
-  List<Transaction> _transactions;
+  List<Transaction> _transactions = [];
 
   String authToken;
   String userId;
@@ -18,7 +15,7 @@ class Transactions with ChangeNotifier {
   Transactions(this.authToken, this.userId, this._transactions);
 
   List<Transaction> get transactions {
-    return [..._transactions].reversed.toList();
+    return [..._transactions];
   }
 
   List<Transaction> get failedTransactions {
@@ -33,23 +30,20 @@ class Transactions with ChangeNotifier {
         .toList();
   }
 
-  String get balance {
+  double get balance {
     double amount = 0.0;
-    transactions.forEach((element) {
-      amount += element.amount;
+    transactions.where((trx) => trx.transactionType == true).forEach((trx) {
+      amount += trx.amount;
     });
-    var formatter = NumberFormat('#,##0.00');
-    return formatter.format(amount);
+
+    return amount;
   }
 
   Future<void> getTransaction() async {
     final url = Uri.parse(
         'https://dev-challenge-c0501-default-rtdb.firebaseio.com/users/transactions.json?auth=$authToken&orderBy="userId"&equalTo="$userId"');
     try {
-      print('this is he authtoken: ' + authToken);
-      print('makin the get request');
       final response = await http.get(url);
-      print(response);
       var extractedData;
       try {
         extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -83,8 +77,7 @@ class Transactions with ChangeNotifier {
   Future<void> addTransaction(Transaction trx, String amount) async {
     final url = Uri.parse(
         'https://dev-challenge-c0501-default-rtdb.firebaseio.com/users/transactions.json?auth=$authToken');
-    await http
-        .post(
+    await http.post(
       url,
       body: json.encode({
         'bankName': trx.bankName,
@@ -95,10 +88,8 @@ class Transactions with ChangeNotifier {
         'ref': trx.ref,
         'userId': userId
       }),
-    )
-        .then((response) {
-      _transactions = [..._transactions, trx];
-      notifyListeners();
-    });
+    );
+    _transactions.add(trx);
+    notifyListeners();
   }
 }

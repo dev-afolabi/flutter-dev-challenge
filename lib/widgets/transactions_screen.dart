@@ -30,13 +30,16 @@ class _TransactionsScreenState extends State<TransactionsScreen>
   @override
   Widget build(BuildContext context) {
     final List<Transaction> allTransactions = [
-      ...Provider.of<Transactions>(context).transactions
+      ...Provider.of<Transactions>(context).transactions.reversed.toList()
     ];
     List<Transaction> creditTransactions = [
-      ...Provider.of<Transactions>(context).successTransactions
+      ...Provider.of<Transactions>(context)
+          .successTransactions
+          .reversed
+          .toList()
     ];
     List<Transaction> debitTransactions = [
-      ...Provider.of<Transactions>(context).failedTransactions
+      ...Provider.of<Transactions>(context).failedTransactions.reversed.toList()
     ];
 
     return Scaffold(

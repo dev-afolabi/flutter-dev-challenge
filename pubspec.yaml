@@ -81,6 +81,13 @@ flutter:
     - assets/icons/carbon_send-alt2.png
     - assets/icons/Wallet_Flatline 2.png
     - assets/icons/Failed-Transaction.png
+    - assets/icons/ic_outline-logout.png
+    - assets/icons/material-symbols_share-outline.png
+    - assets/icons/lucide_key.png
+    - assets/icons/bx_support.png
+    - assets/icons/mdi_bell-notification-outline.png
+    - assets/icons/iconoir_profile-circled.png
+    - assets/icons/carbon_security.png
     - assets/icons/mdi_database-arrow-up-outline.png
     - assets/images/Lines.png
     - assets/images/Lines_2.png

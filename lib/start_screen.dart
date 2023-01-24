@@ -50,6 +50,15 @@ class _StartScreenState extends State<StartScreen> {
       providers: [
         ChangeNotifierProvider(
           create: ((context) => Auth()),
+        ),
+        ChangeNotifierProxyProvider<Auth, Transactions>(
+          update: ((_, authToken, previousTransactions) => Transactions(
+              authToken.token == null ? "" : authToken.token as String,
+              authToken.userId == null ? "" : authToken.userId as String,
+              previousTransactions == null
+                  ? []
+                  : previousTransactions.transactions)),
+          create: (_) => Transactions('', '', []),
         )
       ],
       child: Consumer<Auth>(

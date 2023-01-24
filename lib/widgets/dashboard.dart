@@ -12,31 +12,34 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   int _position = 0;
+  var isInit = true;
 
   late AnimationController _controller;
 
   @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 300),
-    );
-    _controller.addListener(() {
-      if (_controller.value == 1.0) {
-        setState(() {
-          _position = (_position + 1) % 3;
-        });
-        _controller.reset();
-        _controller.forward();
-      }
-    });
-    _controller.forward();
-    super.initState();
+  void didChangeDependencies() {
+    if (isInit) {
+      _controller = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 300),
+      );
+      _controller.addListener(() {
+        if (_controller.value == 1.0) {
+          setState(() {
+            _position = (_position + 1) % 3;
+          });
+          _controller.reset();
+          _controller.forward();
+        }
+      });
+      _controller.forward();
+    }
+    isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Transactions>(context).balance;
     return Container(
       width: double.infinity,
       height: 265,
@@ -116,7 +119,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 ),
                 Provider.of<Transactions>(context).loaded
                     ? Text(
-                        '#${Provider.of<Transactions>(context).balance}',
+                        '#${NumberFormat('#,##0.00').format(Provider.of<Transactions>(context).balance)}',
                         style: TextStyle(
                           fontSize: 36,
                           color: Colors.white,

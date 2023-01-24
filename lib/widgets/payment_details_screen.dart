@@ -1,11 +1,8 @@
 import 'dart:math';
-import 'package:dev_challenge/start_screen.dart';
-import 'package:dev_challenge/widgets/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/transaction.dart';
-import '../providers/auth_provider.dart';
 import '../providers/transactions_provider.dart';
 
 class PaymentDetailsPage extends StatefulWidget {
@@ -24,9 +21,9 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   bool isLoading = true;
 
   @override
-  void didChangeDependencies() async {
+  void didChangeDependencies() {
     if (isInit) {
-      await Provider.of<Transactions>(context)
+      Provider.of<Transactions>(context)
           .addTransaction(widget.trx, widget.amount)
           .then((value) {
         isInit = false;
@@ -39,19 +36,20 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
   String generateAccountNumber() {
     var rng = Random();
-    var l = List.generate(8, (_) => rng.nextInt(10));
+    var list = List.generate(8, (_) => rng.nextInt(10));
 
-    return l.join("");
+    return list.join("");
+  }
+
+  void dash() {
+    Navigator.of(context).pop();
   }
 
   _showSimpleModalDialog(context) {
     showDialog(
         context: context,
         builder: (context) {
-          return MyDialog(
-            trx: widget.trx,
-            amount: widget.amount,
-          );
+          return MyDialog(trx: widget.trx, amount: widget.amount, home: dash);
         });
   }
 
@@ -216,9 +214,11 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 }
 
 class MyDialog extends StatefulWidget {
+  final Function home;
   final Transaction trx;
   final String amount;
-  const MyDialog({super.key, required this.amount, required this.trx});
+  const MyDialog(
+      {super.key, required this.amount, required this.trx, required this.home});
 
   @override
   _MyDialogState createState() => _MyDialogState();
@@ -226,11 +226,8 @@ class MyDialog extends StatefulWidget {
 
 class _MyDialogState extends State<MyDialog> {
   void goTodashboard() {
-    // Navigator.of(context).pop(MaterialPageRoute(
-    //   builder: (context) => StartScreen(),
-    // ));
     Navigator.of(context).pop();
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    widget.home();
   }
 
   @override
