@@ -1,3 +1,4 @@
+import 'package:dev_challenge/widgets/input_withdrawal_screen.dart';
 import 'package:flutter/material.dart';
 
 import './input_transaction_details_screen.dart';
@@ -9,6 +10,14 @@ class SelectTransactionModal extends StatelessWidget {
     Navigator.of(ctx).pushReplacement(
       MaterialPageRoute(builder: (_) {
         return InputTransactionDetails();
+      }),
+    );
+  }
+
+  void showWithdrwalForm(BuildContext ctx) {
+    Navigator.of(ctx).pushReplacement(
+      MaterialPageRoute(builder: (_) {
+        return InputWithdrawalDetails();
       }),
     );
   }
@@ -136,9 +145,7 @@ class SelectTransactionModal extends StatelessWidget {
                 ],
               ),
             ),
-            onTap: () {
-              print('This container was tapped anywhere');
-            },
+            onTap: () => showWithdrwalForm(context),
           ),
         ],
       ),

@@ -15,11 +15,18 @@ class InputTransactionDetails extends StatefulWidget {
 }
 
 class _InputTransactionDetailsState extends State<InputTransactionDetails> {
+  final GlobalKey<FormState> _formKey = GlobalKey();
   final amountInputController = TextEditingController();
 
   final descriptionInputController = TextEditingController();
 
   void generatePaymentDetails(BuildContext ctx, bool type) {
+    if (!_formKey.currentState!.validate()) {
+      // Invalid!
+      return;
+    }
+    _formKey.currentState!.save();
+
     var trx = TransactionHelper()
         .generateTransaction(amountInputController.text, type);
     Navigator.of(ctx).pushReplacement(
@@ -85,73 +92,85 @@ class _InputTransactionDetailsState extends State<InputTransactionDetails> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: 10,
-                          bottom: 30,
-                        ),
-                        padding: EdgeInsets.only(
-                          left: 24,
-                          right: 24,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 8,
-                                bottom: 8,
-                              ),
-                              child: Text('Amount (Naira)'),
-                            ),
-                            SizedBox(
-                              child: TextField(
-                                controller: amountInputController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: "Amount",
+                Form(
+                  key: _formKey,
+                  child: SizedBox(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            top: 10,
+                            bottom: 30,
+                          ),
+                          padding: EdgeInsets.only(
+                            left: 24,
+                            right: 24,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 8,
+                                  bottom: 8,
                                 ),
-                                keyboardType: TextInputType.numberWithOptions(
-                                    decimal: true),
+                                child: Text('Amount (Naira)'),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(
-                          left: 24,
-                          right: 24,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 8,
-                                bottom: 8,
+                              SizedBox(
+                                child: TextFormField(
+                                    controller: amountInputController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: "Amount",
+                                    ),
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Input a valid amount';
+                                      }
+                                      if (double.parse(value) < 200) {
+                                        return 'Minimum amount of #200';
+                                      }
+                                      return null;
+                                    }),
                               ),
-                              child: Text('Description'),
-                            ),
-                            SizedBox(
-                              height: 310,
-                              child: TextField(
-                                controller: descriptionInputController,
-                                maxLines: 5,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: "Description",
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(
+                            left: 24,
+                            right: 24,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 8,
+                                  bottom: 8,
                                 ),
-                                textInputAction: TextInputAction.done,
+                                child: Text('Description'),
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 310,
+                                child: TextField(
+                                  controller: descriptionInputController,
+                                  maxLines: 5,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: "Description",
+                                  ),
+                                  textInputAction: TextInputAction.done,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Padding(

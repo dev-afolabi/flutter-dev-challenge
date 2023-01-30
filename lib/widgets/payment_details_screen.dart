@@ -24,7 +24,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   void didChangeDependencies() {
     if (isInit) {
       Provider.of<Transactions>(context)
-          .addTransaction(widget.trx, widget.amount)
+          .addTransaction(widget.trx, widget.amount, 'deposit')
           .then((value) {
         isInit = false;
         _showSimpleModalDialog(context);
@@ -49,7 +49,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
     showDialog(
         context: context,
         builder: (context) {
-          return MyDialog(trx: widget.trx, amount: widget.amount, home: dash);
+          return DepositDialouge(trx: widget.trx, home: dash);
         });
   }
 
@@ -213,18 +213,16 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   }
 }
 
-class MyDialog extends StatefulWidget {
+class DepositDialouge extends StatefulWidget {
   final Function home;
   final Transaction trx;
-  final String amount;
-  const MyDialog(
-      {super.key, required this.amount, required this.trx, required this.home});
+  const DepositDialouge({super.key, required this.trx, required this.home});
 
   @override
-  _MyDialogState createState() => _MyDialogState();
+  _DepositDialougeState createState() => _DepositDialougeState();
 }
 
-class _MyDialogState extends State<MyDialog> {
+class _DepositDialougeState extends State<DepositDialouge> {
   void goTodashboard() {
     Navigator.of(context).pop();
     widget.home();
@@ -281,7 +279,7 @@ class _MyDialogState extends State<MyDialog> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                         text:
-                            "The sum of #${widget.amount} was succuessfuly paid into your account.",
+                            "The sum of #${widget.trx.amount} was succuessfuly paid into your account.",
                         style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 14,

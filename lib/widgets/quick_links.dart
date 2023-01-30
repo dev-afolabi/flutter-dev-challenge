@@ -1,4 +1,7 @@
+import 'package:dev_challenge/widgets/input_withdrawal_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'input_transaction_details_screen.dart';
 
 class QuickLinks extends StatelessWidget {
   const QuickLinks({super.key});
@@ -50,38 +53,48 @@ class QuickLinks extends StatelessWidget {
                           Radius.circular(30),
                         ), //border corner radius
                       ),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xff123CAA),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(50),
-                                ), //border corner radius
-                              ),
-                              child: Image.asset(
-                                'assets/icons/mingcute_transfer.png',
-                                fit: BoxFit.cover,
+                      child: InkWell(
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xff123CAA),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(50),
+                                  ), //border corner radius
+                                ),
+                                child: Image.asset(
+                                  'assets/icons/mingcute_transfer.png',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            'Payment',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
+                            Text(
+                              'Payment',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) {
+                              return InputTransactionDetails();
+                            }),
+                          );
+                        },
                       )),
                   Container(
-                      height: 50,
-                      width: 160,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30),
-                        ), //border corner radius
-                      ),
+                    height: 50,
+                    width: 160,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(30),
+                      ), //border corner radius
+                    ),
+                    child: InkWell(
                       child: Row(
                         children: [
                           Padding(
@@ -105,7 +118,16 @@ class QuickLinks extends StatelessWidget {
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
-                      )),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) {
+                            return InputWithdrawalDetails();
+                          }),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

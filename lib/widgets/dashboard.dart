@@ -13,11 +13,33 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   int _position = 0;
   var isInit = true;
+  var hidden = false;
 
   late AnimationController _controller;
+  // @override
+  // void didChangeDependencies() {
+  //   if (isInit) {
+  //     _controller = AnimationController(
+  //       vsync: this,
+  //       duration: Duration(milliseconds: 300),
+  //     );
+  //     _controller.addListener(() {
+  //       if (_controller.value == 1.0) {
+  //         setState(() {
+  //           _position = (_position + 1) % 3;
+  //         });
+  //         _controller.reset();
+  //         _controller.forward();
+  //       }
+  //     });
+  //     _controller.forward();
+  //   }
+  //   isInit = false;
+  //   super.didChangeDependencies();
+  // }
 
   @override
-  void didChangeDependencies() {
+  void initState() {
     if (isInit) {
       _controller = AnimationController(
         vsync: this,
@@ -35,7 +57,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       _controller.forward();
     }
     isInit = false;
-    super.didChangeDependencies();
+    super.initState();
+  }
+
+  void toggleHidden() {
+    setState(() {
+      hidden = !hidden;
+    });
   }
 
   @override
@@ -118,12 +146,49 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   style: TextStyle(fontSize: 12, color: Colors.white),
                 ),
                 Provider.of<Transactions>(context).loaded
-                    ? Text(
-                        '#${NumberFormat('#,##0.00').format(Provider.of<Transactions>(context).balance)}',
-                        style: TextStyle(
-                          fontSize: 36,
-                          color: Colors.white,
-                        ),
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          !hidden
+                              ? Row(
+                                  children: [
+                                    Image.asset(
+                                      'assets/icons/naira.png',
+                                      width: 26,
+                                      height: 46,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Text(
+                                      NumberFormat('#,##0.00').format(
+                                          Provider.of<Transactions>(context)
+                                              .balance),
+                                      style: TextStyle(
+                                        fontSize: 36,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Text('XXXXXXX',
+                                  style: TextStyle(
+                                    fontSize: 36,
+                                    color: Colors.white,
+                                  )),
+                          GestureDetector(
+                            onTap: toggleHidden,
+                            child: Container(
+                              margin: EdgeInsets.only(left: 5),
+                              child: Image.asset(
+                                hidden
+                                    ? 'assets/icons/EyeHidden.png'
+                                    : 'assets/icons/ph_eye-light.png',
+                                width: 18.33,
+                                height: 18.33,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                        ],
                       )
                     : DotsIndicator(
                         dotsCount: 3,

@@ -37,12 +37,12 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   // This widget is the root of your application.
 
-  Future<void> addTransaction(
-      Transaction trx, String amount, String token) async {
-    setState(() async {
-      await Transactions('', '', []).addTransaction(trx, amount);
-    });
-  }
+  // Future<void> addTransaction(
+  //     Transaction trx, String amount, String token) async {
+  //   setState(() async {
+  //     await Transactions('', '', []).addTransaction(trx, amount);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class _StartScreenState extends State<StartScreen> {
                   const Color(0xff123CAA),
                 ),
                 textTheme: ThemeData.light().textTheme.copyWith(
-                      bodyText1: TextStyle(color: Colors.white),
+                      bodyLarge: TextStyle(color: Colors.white),
                     ),
               ),
               home: auth.isAuth ? HomeScreen() : AuthScreen(),
